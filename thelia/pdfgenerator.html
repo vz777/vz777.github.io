@@ -2,7 +2,7 @@
 <html>
 <head>
 	<link href="styles.css" type="text/css" rel="stylesheet">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
@@ -13,17 +13,249 @@
 <div class="row">
 	<div class="col-12">
 		<a href="index.html">Retour à l'accueil</a>
-	</div>	
+	</div>
 	<div class="col-12">
 	<h1 class="mb-1">Pdf generator</h1>
 		<ul id="navigation" class="list-group">
-		  <li class="list-group-item"><a href="/thelia/pdfgenerator.html">Etude du module pdf generator</a></li>
+		  <li class="list-group-item">Etude du module pdf generator</li>
 		</ul>
 	</div>
+	<div class="col-12">
+	Le module PdfGenerator est accessible sur le dépot de  : <a href="https://github.com/roadster31/PdfGenerator/">roadster31</a>
 
-	
-</div>
-</div>
+	Il est composé de
+		<p class="pl-1 pt-4">/config</p>
+		<p class="pl-4">config.xml</p>
+		<p class="pl-4">module.xml</p>
+		<p class="pl-4">routing.xml</p>
+		<p class="pl-1 ">/controller</p>
+		<p class="pl-4">GeneratorController.php</p>
+		<p class="pl-1">/I18N</p>
+		<p class="pl-4">en_US.php</p>
+		<p class="pl-4">fr_FR.php</p>
+
+
+		<p class="pl-1">/PdfGenerator.php</p>
+		<p class="pl-1">/Readme.md</p>
+		<p class="pl-1">/composer.json</p>
+
+	</div>
+
+	<div>
+		<h2>Le dossier config</h2>
+		<h3>config.xml</h3>
+    	<p class="pt-4">
+	    	Le fichier config.xml est <b>obligatoire</b>.
+		</p>
+		<p class="border border-3">
+			Celui-ci sert à déclarer les services, écouteurs d'evenements (listener), loop, formulaires, commandes, et hooks.<br>
+			Depuis la version 2.5, il existe l'autowiring.
+		</p>
+		<p>
+			Ici on retrouve le format de configuration standard de Thelia, avec une déclaration de namespace pour le schéma de configuration de Thelia et une déclaration de l'emplacement du schéma.<br>
+			On voit qu'il n'y a rien de spécial, c'est donc qu'il n'y a besoin de rien de plus<br>
+		</p>
+		<h3>module.xml</h3>
+		<p class="pt-4">
+			Le fichier module.xml est <b>obligatoire</b> et sert à déclarer la version du module, la compatibilité, les dépéndances avec d'autres modules, l'auteur, etc
+		</p>
+		<h3>routing.xml</h3>
+		<p class="pt-4">
+			Le fichier routing.xml sert à déclarer les routes.<br>
+			Ce fichier n'est plus vraiment utile à partir de la version 2.5, car on peut, à présent déclarer les routes dans les controllers 
+			avec les annotations.<br>
+			Il est peut être possible de malgré tout conserver les routes définies ici.
+			Sinon il faudra passer par la nouvelle façon de les écrire avec les annotations.<br><br>
+
+			En haut, on retrouve le format des routes classiques de symfony, avec une déclaration de namespace pour le schéma de
+			de Symfony et une déclaration de l'emplacement du schéma.<br><br>
+
+			Il y a deux routes définies, une pour la génération de PDF téléchargeable et une pour la visualisation de PDF dans le navigateur.<br><br>
+
+			La première route, pdf_generator.get_pdf, a un chemin d'URL /getpdf/{template}/{outputFileName} 
+			et définit le contrôleur PdfGenerator\Controller\GeneratorController::downloadPdf pour gérer les demandes pour ce chemin.
+			Il y a également des exigences pour les paramètres de template et outputFileName, 
+			qui peuvent contenir n'importe quelle chaîne de caractères.<br><br>
+
+			La seconde route, pdf_generator.view_pdf, a un chemin d'URL similaire /viewpdf/{template}/{outputFileName} 
+			et définit le contrôleur PdfGenerator\Controller\GeneratorController::viewPdf pour gérer les demandes pour ce chemin.
+			Il y a également des exigences pour les paramètres de template et outputFileName,
+			qui peuvent contenir n'importe quelle chaîne de caractères.<br><br>
+
+			Il y a également des exigences pour les paramètres de template et outputFileName, qui sont définis par les "requirement key".
+			Ces clés indiquent les expressions régulières qui doivent être respectées par les paramètres template et
+			outputFileName pour que la route soit considérée comme valide. 
+			Dans ce cas, les expressions régulières sont ".*", 
+			ce qui signifie que n'importe quelle chaîne de caractères est acceptée pour ces paramètres.<br><br>
+
+			Ces routes permettent à l'application de gérer les demandes pour les URLs correspondantes 
+			et de diriger les demandes vers les contrôleurs appropriés pour traiter les demandes et générer les PDFs.<br><br>
+			
+		</p>
+		<h2>Le controller</h2>
+
+		<p class="pt-4">
+			Un contrôleur symfony est une fonction PHP que vous créez et qui lit les informations de l'objet Request et crée et renvoie un objet Response.
+			La réponse peut être une page HTML, JSON, XML, un téléchargement de fichier, une redirection, une erreur 404 ou autre.<br>
+			Le contrôleur exécute toute logique arbitraire dont votre application a besoin pour rendre le contenu d'une page.<br><br>
+
+			Bien qu'un contrôleur puisse être n'importe quel chose appelable en PHP (fonction, méthode sur un objet, ou un Closure), 
+			un contrôleur est généralement une méthode à l'intérieur d'une classe de contrôleur.
+
+			<br>
+			
+			Dans Thelia, Les contrôleurs fonctionnent de la même manière que les contrôleurs de Symfony,
+			sauf que dans Thelia il y a 2 types de contrôleurs : Admin et Front
+			<br>
+	    	Ici il s'agit d'un contrôleur Front qui étend BaseFrontController,
+			ce qui lui donne accès à toutes les fonctionnalités de base de Thelia.
+			Lors de l'appel du rendu dans le controller, Thelia va chercher le modèle dans le répertoire frontOffice.<br><br>
+			<h3>Use, namespace et class</h3>
+			ligne 16 : Thelia/Symfony profitent de la fonctionnalité d'espace de noms de PHP pour nommer la classe de contrôleur entière.
+			<br>
+			ligne 18 : Thelia/Symfony profite à nouveau de la fonctionnalité de l'espace de noms de PHP : 
+			le mot-clé use importe les classes : BaseFrontController, PdfEvent, TheliaEvents, TheliaProcessException, Tlog<br>
+			Le contrôleur devra les retourner.<br>
+			ligne 25 : La classe peut techniquement s'appeler n'importe quoi, mais elle est suffixée par Controller par convention.
+			ici elle s'appele GeneratorController
+			    ligne 10 : La méthode d'action est autorisée à avoir un argument $max grâce au wildcard {max} dans la route.
+			    ligne 14 : Le contrôleur crée et retourne un objet Response.
+			<br><br>
+
+			Ce controller est composé de 3 methodes :
+			<code>downloadPdf</code> (publique)
+			<code>viewPdf</code> (publique)
+			<code>renderPdfTemplate</code> (protegée)
+			<br>
+			<h3>method downloadPdf</h3>
+			ligne 27 :
+			La méthode downloadPdf prend en entrée deux paramètres, $template et $outputFileName. 
+			$template est le nom du template qui sera utilisé pour générer le PDF, et
+			$outputFileName est le nom que le fichier PDF aura lorsqu'il sera téléchargé. 
+			<br>
+			La méthode appelle ensuite la méthode protégée renderPdfTemplate en lui passant en paramètre le template, 
+			le nom de fichier de sortie et false comme troisième paramètre. 
+			Le paramètre false indique que le PDF généré doit être téléchargé, et pas affiché dans le navigateur.
+			<br>
+
+			<h3>method viewPdf</h3>
+
+			ligne 32 :
+			La méthode viewPdf fonctionne de la même manière que la méthode downloadPdf,
+			mais en lui passant true comme troisième paramètre pour indiquer que le PDF généré doit être affiché dans le navigateur, 
+			et non téléchargé.
+			<br>
+
+			<h3>method renderPdfTemplate</h3>
+
+			ligne 37 :
+			les ligne de commentaires sont des lignes souvent générées par des IDE,
+			elle sont censées faciliter la compréhension du code mais je ne sais pas exactement comment.
+			<br><br>
+
+			ligne 43 :
+			La méthode est protégée, ce qui veut dire qu'elle n'est utilisable que dans la class ou elle se trouve.
+			La méthode protégée renderPdfTemplate est utilisée pour générer le PDF en utilisant les paramètres fournis. 
+			<br><br>
+
+			ligne 45 :
+			Elle commence par utiliser la méthode renderRaw pour rendre le template en utilisant le nom de template,
+			un tableau vide et le template pdf actif. 
+			Cela retourne le contenu HTML du template.
+			La méthode renderRaw est une méthode de Symfony,
+			qui est utilisée pour rendre un template et retourne le contenu de la réponse. 
+			C'est un raccourci pour la méthode render qui rend un template mais retourne un objet Response complet,
+			tandis que renderRaw retourne simplement le contenu.
+			La méthode renderRaw est appelée avec trois arguments: le nom du template à rendre, un tableau vide et le template pdf actif. 
+			La méthode retourne le contenu HTML du template, qui est ensuite passé à l'objet PdfEvent par la variable $html
+			<br><br>
+
+			ligne 52 :
+			Ensuite, il crée un objet PdfEvent en lui passant en paramètre le contenu HTML généré.
+			La méthode renderPdfTemplate utilise un objet de type PdfEvent pour générer le PDF.
+			Elle crée un nouvel objet PdfEvent en lui passant en paramètre le contenu HTML généré à partir du template spécifié, 
+			puis déclenche un événement de type TheliaEvents::GENERATE_PDF en utilisant l'objet PdfEvent.
+		</p>
+			<br>
+		<p class="border border-3">
+
+			La class PdfEvent est défini dans pdfevent.php 
+			Elle est utilisée pour encapsuler les données nécessaires à la génération d'un PDF, 
+			comme le contenu HTML qui sera utilisé pour générer le PDF. 
+			Elle est également utilisée pour stocker le PDF généré et pour communiquer les erreurs éventuelles 
+			qui se sont produites lors de la génération.
+			En bref, la classe PdfEvent est utilisée pour encapsuler les données nécessaires à la génération d'un PDF 
+			et pour déclencher un événement pour générer le pdf en utilisant les données encapsulées.
+		</p>
+		<p>
+			Il déclenche ensuite un événement Thelia de type TheliaEvents::GENERATE_PDF pour générer le PDF à partir du contenu HTML. 
+			Si la génération a réussi, il retourne une réponse contenant les données PDF (ligne 56), sinon il lève une exception (ligne 59) `
+		</p>
+		<h2>Le dossier I18n</h2>
+
+		<p class="pt-4">
+			Le dossier I18n contient les fichiers de traductions du modules.<br><br>
+			Dans le cas de PdfGenerator, on cherche à traduire une chaine dans le controller.
+			La traduction s'effectue dans le controller avec <code>$this->getTranslator()->trans(</code>
+			<br>
+			Je pense que ce code pour la traduction est valable pour thelia &lt;2.5 mais qu'il faut le réécrire pour la 2.5.
+			En dessous, voila ce qu'en dit la doc
+		</p>
+		<p class="border border-3">
+			Lorsque l'on a des chaînes à traduire dans vos classes php, comme des messages d'erreur, on doit utiliser le translator.<br><br>
+			Translator est une classe singleton (un singleton est un patron de conception ou design pattern, l'objectif est de restreindre l'instanciation d'une classe à un seul objet) qui vous aide à enregistrer votre chaîne comme traduisible comme ceci :
+			<code>
+			Translator::getInstance()
+    			->trans("A string that need to be translated") ;
+			</code>
+			<br><br>
+			Si vous voulez insérer une valeur dynamique qui peut changer et qui n'a pas besoin d'être traduite, vous pouvez la passer dans le deuxième paramètre :
+			<code>
+			Translator::getInstance()
+			    ->trans("Une chaîne qui doit être traduite avec %variable", ['%variable' => $myVariable]) ;
+			</code>
+			<br><br>
+			Le troisième paramètre de la fonction tans est le domaine, donc si vous êtes dans un fichier module, le mieux est de prendre le domaine global du module présent dans une constante de la classe de base :
+			<code>
+			Translator::getInstance()
+			    ->trans(
+			        "Une chaîne qui doit être traduite avec %variable",
+			        ['%variable' => $myVariable]
+			        MonProjet::DOMAIN_NAME
+			    ) ;
+			</code>
+		</p>
+		<h2>Le fichier PdfGenerator.php</h2>
+
+		<p class="pt-4">
+			PdfGenerator.php est <b>obligatoire</b>, c'est le fichier de base du module ; il aide à définir certains comportements.
+			On retrouve la classe pincipale PdfGenerator (qui porte le même nom que le dossier dans lequel le module se trouve)
+			<code>class PdfGenerator extends BaseModule</code>
+			Cette class définit une constante <code>const DOMAIN_NAME = 'pdfgenerator';</code>
+			qui est utilisée dans le controller pour les traductions.
+		</p>
+		<br>
+		<p class="border border-3">
+			Ce fichier doit étendre la classe Thelia\Module\BaseModule (sauf pour les modules de livraisons et de paiements)
+			Pendant le cycle de vie d'un module, ces fonctions sont appelées et vous permettent d'appliquer votre propre logique en les écrasant :
+			<br><br>
+		    install(ConnectionInterface $con = null) ; Cette méthode est appelée lorsque le plugin est installé pour la première fois.<br>
+		    preActivation(ConnectionInterface $con = null) ; Cette méthode est appelée avant l'activation du module, et peut annuler l'activation en retournant false.<br>
+		    postActivation(ConnectionInterface $con = null) ; Cette méthode est appelée après que le module ait été activé avec succès.<br>
+		    preDeactivation(ConnectionInterface $con = null) ; Cette méthode est appelée avant la désactivation du module, et peut annuler la désactivation en renvoyant false.<br>
+		    postDeactivation(ConnectionInterface $con = null) ; Cette méthode est appelée après que le module ait été désactivé avec succès.<br>
+		    update($currentVersion, $newVersion, ConnectionInterface $con = null) ; Cette méthode est appelée lors du rafraîchissement d'un module si la version précédente dans module.xml est différente de la version actuelle.<br>
+		</p>
+
+		<h2>Le readme, c'est le readme quoi ..</h2>
+		<h2>Le fichier composer.json</h2>
+
+		<p class="pt-4">
+			Le fichier composer.json sert à partager le module avec la communauté.
+			Il y a une façon d'écrire dans ce module qui permet le partage du module sur packagist.
+			Il y a un installateur qui copie le module dans le bon répertoire (local/module).
+		</p>
+	</div>
 
 </body>
 </html>
