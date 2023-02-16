@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="styles.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h2>Import et méthodes de la class BaseModule</h2>
+
+            <div class="col-12">
+                <a href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Module/BaseModule.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Module/BaseModule.php</a>
+
+                Cette classe est une classe de base pour les modules Thelia. Elle importe plusieurs classes et interfaces de Thelia et de Symfony, telles que:
+
+                "ConnectionInterface" et "Propel": classes de Propel pour la gestion des connexions à la base de données.<br>
+                "ContainerAwareTrait", "ContainerBuilder", "ContainerConfigurator" et "ServicesConfigurator": classes de Symfony pour la gestion des services et des dépendances.<br>
+                "EventDispatcherInterface": interface de Symfony pour la gestion des événements.<br>
+                "Filesystem": classe de Symfony pour la manipulation des fichiers et des répertoires.<br>
+                "Request" et "Session": classes de Symfony pour la gestion des requêtes HTTP et des sessions.<br>
+                "HookCreateAllEvent", "HookUpdateEvent", "OrderPayTotalEvent" et "TheliaEvents": classes de Thelia pour la gestion des événements de Thelia.<br>
+                "Translator": classe de Thelia pour la gestion des traductions.<br>
+                "Module", "ModuleConfigQuery", "ModuleI18n", "ModuleI18nQuery", "ModuleImage" et "ModuleQuery": classes générées automatiquement par Propel pour la gestion des modules de Thelia.<br>
+                "Cart", "Country", "HookQuery", "Lang" et "LangQuery": classes générées automatiquement par Propel pour la gestion des paniers, des pays, des hooks et des langues de Thelia.<br>
+                "TaxEngine": classe de Thelia pour la gestion des taxes.<br>
+                "TemplateDefinition": classe de Thelia pour la définition des templates.<br>
+                "Image": classe de Thelia pour la gestion des images.<br><br><br>
+
+
+
+
+                Elle nout met à disposition des méthodes pour activer/désactiver un module, vérifier si le conteneur de services est disponible, accéder au conteneur de services et à la requête en cours.<br><br>
+
+                Voici une description des méthodes disponibles dans cette classe :<br><br>
+                
+                    activate() : méthode qui active un module. Si l'objet Module est fourni en paramètre, la méthode active ce module, sinon elle active le module actuel.<br>
+                    deactivate() : méthode qui désactive un module. Si l'objet Module est fourni en paramètre, la méthode désactive ce module, sinon elle désactive le module actuel.<br>
+                    hasContainer() : méthode qui vérifie si le conteneur de services est disponible.<br>
+                    getContainer() : méthode qui renvoie le conteneur de services.<br>
+                    hasRequest() : méthode qui vérifie si une requête est disponible.<br>
+                    setRequest() : méthode qui définit la requête en cours.<br>
+                    getRequest() : méthode qui renvoie la requête en cours.<br>
+                    hasDispatcher() : méthode qui vérifie si un dispatcher d'événements est disponible.<br>
+                    setDispatcher() : méthode qui définit le dispatcher d'événements.<br>
+                    getDispatcher() : méthode qui renvoie le dispatcher d'événements.<br>
+                    preActivation() : méthode qui est appelée avant l'activation d'un module.<br>
+                    postActivation() : méthode qui est appelée après l'activation d'un module.<br>
+                    preDeactivation() : méthode qui est appelée avant la désactivation d'un module.<br>
+                    postDeactivation() : méthode qui est appelée après la désactivation d'un module.<br>
+                    registerHooks() : méthode qui enregistre les hooks du module. Les hooks sont des points d'entrée dans le code de Thelia où les modules peuvent exécuter du code personnalisé.<br>
+                    hookCreateAll() : méthode qui est appelée lors de la création de tous les hooks.<br>
+                    hookUpdate() : méthode qui est appelée lors de la mise à jour d'un hook.<br>
+                    hookOrderPayTotal() : méthode qui est appelée lorsqu'une commande est payée.<br>
+                    getTranslator() : méthode qui renvoie l'objet Translator pour la traduction des chaînes de caractères.<br>
+                    getSession() : méthode qui renvoie l'objet Session pour la gestion des sessions.<br>
+                    getTaxEngine() : méthode qui renvoie l'objet TaxEngine pour le calcul des taxes.<br>
+                    getLang() : méthode qui renvoie l'objet Lang pour la gestion des langues.<br>
+                    getImage() : méthode qui renvoie l'objet Image pour la manipulation d'images.<br>
+                    getHook() : méthode qui renvoie l'objet Hook pour la gestion des hooks.<br>
+                    getCountry() : méthode qui renvoie l'objet Country pour la gestion des pays.<br>
+                    getModuleImage() : méthode qui renvoie l'objet ModuleImage pour la gestion des images de module.<br>
+                    getModuleModel() : méthode qui renvoie l'objet Module pour la gestion du module actuel.<br>
+                    getModuleConfig() : méthode qui renvoie l'objet ModuleConfig pour la gestion de la configuration du module actuel.<br>
+                    Les methodes  install(), update(), preActivation(), postActivation(), preDeactivation(), postDeactivation(), et destroy()
+                    sont appelées durant la vie du module et peuvent être utilisées pour accomplir différentes tâches.<br><br><br>
+
+
+
+                    getCurrentOrderTotalAmount a pour but de calculer le montant total de la commande actuelle en fonction de plusieurs critères.<br>
+
+                    Les arguments de la méthode permettent de préciser si le montant total doit inclure ou non la taxe ($with_tax),
+                     la remise ($with_discount) et les frais de port ($with_postage).<br>
+                    Les variables $session, $cart, $order, $taxEngine, $country et $state 
+                    sont des instances de classes utilisées pour récupérer les informations nécessaires au calcul du montant total.<br><br>
+
+
+                    Le montant total est ensuite calculé en fonction des critères précisés en utilisant la méthode getTaxedAmount ou getTotalAmount de l'objet $cart.<br>
+                    Enfin, si les frais de port doivent être inclus dans le montant total, la méthode ajoute ou soustrait la taxe des frais de port en fonction de la valeur de $with_tax.<br><br><br>
+
+
+                    Les classes suivantes permettent de configurer le module et d'enregistrer des hooks pour l'affichage de contenu dans l'interface de Thelia.<br><br>
+
+                    getHooks() : cette méthode doit être redéfinie dans une classe dérivée pour retourner la liste des hooks auxquels le module souhaite s'abonner.<br>
+                    registerHooks() : cette méthode va créer ou mettre à jour les entrées de base de données pour chaque hook défini dans le module en appelant la méthode createOrUpdateHook(). Elle va également mettre à jour les traductions pour chaque hook. Cette méthode est appelée lors de l'activation du module.<br>
+                    createOrUpdateHook() : cette méthode va créer ou mettre à jour les entrées de base de données pour un hook spécifique. Si le hook n'existe pas, il sera créé. Sinon, ses données seront mises à jour. Cette méthode va également gérer les traductions pour chaque hook.<br>
+                    getHookI18nInfo() : cette méthode est utilisée par createOrUpdateHook() pour extraire les informations de traduction pour un hook spécifique. Ces informations sont stockées dans le tableau hookI18nData. Cette méthode retourne un tableau contenant des informations sur les titres, les descriptions et les chapôs du hook dans toutes les langues prises en charge.<br>
+                    arrayKeyPop() : cette méthode est utilisée par createOrUpdateHook() pour extraire une valeur d'un tableau associatif en utilisant une clé spécifique. Elle va supprimer l'entrée du tableau et la retourner.<br>
+                    getDescriptionHook() : cette méthode retourne la description pour un hook spécifique.<br>
+                    updateModule() : cette méthode est utilisée pour mettre à jour les données de configuration d'un module dans la base de données. Elle va créer une entrée si elle n'existe pas encore.<br>
+                    getModuleLogo() : cette méthode retourne l'URL de l'image du logo pour un module spécifique.<br>
+                    getConfigValue() : cette méthode est utilisée pour récupérer la valeur d'une configuration de module stockée dans la base de données.<br>
+                    setConfigValue() : cette méthode est utilisée pour stocker une valeur de configuration de module dans la base de données.<br>
+                    getDefaultConfig() : cette méthode doit être redéfinie dans une classe dérivée pour retourner un tableau contenant les valeurs par défaut pour toutes les configurations de module prises en charge.<br>
+                    getContainer() : cette méthode retourne le conteneur de service utilisé par Thelia pour gérer l'injection de dépendances.<br>
+                    getPropelSchemaDir(): renvoie le répertoire contenant le schéma Propel pour le module.<br>
+                    hasPropelSchema(): indique si le module a un schéma Propel.<br>
+                    initializeCoreI18n(): ajoute les traductions de base du module pour être utilisées lors de l'activation du module.<br>
+        </div>
+    </div>
+
+</body>
+
+</html>
