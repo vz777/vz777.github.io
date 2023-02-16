@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="styles.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <style>
+        .word {
+            word-break: break-word !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h2>Créer le module</h2>
+            <div class="col-12">
+                <p>Pour créer un module, il faut créer un dossier, admettons /MonDossier. On prendra le soin de nommer
+                    ce dossier de manière explicite car ce sera aussi le nom de notre classe principale.<br>
+
+                    Ensuite, à l’intérieur de /MonDossier, créer un dossier Config et deux fichiers :<br>
+                    config.xml<br>
+                    module.xml<br><br>
+
+                    Le minimum à mettre dans config.xml :</p>
+                <pre>
+                    <code>
+                    &lt;?xml version="1.0" encoding="UTF-8" ?>
+
+                    &lt;config xmlns="http://thelia.net/schema/dic/config"
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
+                    &lt;/config>
+                    </code>
+                </pre>
+
+
+                <br>
+                Et voila, ce que devra contenir module.xml
+                <pre>
+                    <code>
+                    &lt;?xml version="1.0" encoding="UTF-8"?>
+                    &lt;module xmlns="http://thelia.net/schema/dic/module"
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_1.xsd">
+                        &lt;fullnamespace>MonDossier\MonDossier&lt;/fullnamespace>
+                        &lt;descriptive locale="en_US">
+                            &lt;title>The title of your module&lt;/title>
+                            &lt;subtitle>You can explain here quickly what do your module&lt;/subtitle>
+                        &lt;/descriptive>
+                        &lt;descriptive locale="fr_FR">
+                            &lt;title>Le titre de votre module&lt;/title>
+                            &lt;subtitle>Vous pouvez expliquez ici rapidement à quoi sert le module&lt;/subtitle>
+                        &lt;/descriptive>
+                        &lt;languages>
+                            &lt;language>en_US&lt;/language>
+                            &lt;language>fr_FR&lt;/language>
+                        &lt;/languages>
+                        &lt;version>1.0.0&lt;/version>
+                        &lt;author>
+                            &lt;name>Le nom de l’auteur du module&lt;/name>
+                            &lt;company>Son entreprise&lt;/company>
+                            &lt;email>son adresse mail&lt;/email>
+                        &lt;/author>
+                        &lt;type>classic&lt;/type>
+                        &lt;thelia>La version de thelia&lt;/thelia>
+                        &lt;stability>La stabilité, eg : alpha, dev, prod&lt;/stability>
+                    &lt;/module>
+                    </code>
+                </pre>
+
+                <p>
+                    Il faudra créer aussi un fichier MonModule.php à la racine de MonDossier,
+                    celui-ci va contenir le minimum syndical pour le moment:</p>
+                <pre>
+                    <code>
+                    &lt;?php
+
+                    /*************************************************************************************/
+                    /* This file is part of the Thelia package. */
+                    /* */
+                    /* Copyright (c) OpenStudio */
+                    /* email : dev@thelia.net */
+                    /* web : http://www.thelia.net */
+                    /* */
+                    /* For the full copyright and license information, please view the LICENSE.txt */
+                    /* file that was distributed with this source code. */
+                    /*************************************************************************************/
+
+                    namespace MonModule;
+
+                    use Thelia\Module\BaseModule;
+
+                    class MonModule extends BaseModule
+                    {
+
+                    }
+                    </code>
+                </pre>
+
+                <p>
+                    On définit que la classe MonModule se trouve dans le namespace MonModule.<br>
+                    On définit ensuite que notre classe hérite de la classe "BaseModule".<br>
+                    L'héritage de BaseModule est obligatoire.<br>
+                    Nous allons donc pouvoir utiliser les fonctionnalités offertes par la classe BaseModule.<br><br>
+
+                    <a
+                        href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Module/BaseModule.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Module/BaseModule.php</a>
+
+
+
+                    Voila en soit le module est crée et c'est vachement bien mais en l'état il ne sert à rien ;)<br><br>
+                </p>
+            </div>
+
+            <h2>Apporter des fonctionnalités au module</h2>
+
+            <div class="col-12">
+
+                Ensuite, il faudra créer les dossiers dont vous avez besoin dans votre module,
+                le controller n’est pas obligatoire.<br><br>
+
+                Par exemple, un dossier EventListener peut suffire,
+                prenons l’exemple du mail envoyé sur un changement de statut.<br><br>
+
+                Il faut déja penser à déclarer le listener dans config.xml, par exemple :
+                <pre>
+                    <code>
+                    &lt;services>
+                        &lt;service id="ce.que.vous.voulez.d_unique" class="MonModule\EventListener\MonListener">
+                            &lt;argument type="service" id="mailer"/>
+                            &lt;tag name="kernel.event_subscriber"/>
+                        &lt;/service>
+                    &lt;/services>
+                    </code>
+                </pre>
+
+                Dans le dossier EventListener, on crée le fichier MonListener.php,
+                dans lequel il va falloir définir le namespace et les classes que l’on souhaite importer.<br>
+                <pre>
+                    <code>
+                        namespace MonModule\EventListener;
+
+                        use MonModule\MonModule;
+                        use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+                        use Thelia\Core\Event\Order\OrderEvent;
+                        use Thelia\Core\Event\TheliaEvents;
+                        use Thelia\Log\Tlog;
+                        use Thelia\Mailer\MailerFactory;
+                        use Thelia\Model\OrderQuery;
+                        use Thelia\Model\OrderStatusQuery;
+                        use Thelia\Model\ConfigQuery;
+                    </code>
+                </pre>
+
+                La classe MonModule est importée via l'instruction "use MonModule\MonModule;".<br>
+                Cela permet d'utiliser la classe MonModule dans notre future classe en se référant simplement à son nom
+                de classe, plutôt que de devoir préciser son namespace complet à chaque fois.<br><br>
+
+                OrderEvent est une classe d'événement qui est déclenché lorsqu'une commande est modifiée ou créé.<br>
+                <a
+                    href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Core/Event/Order/OrderEvent.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Core/Event/Order/OrderEvent.php</a><br><br>
+
+                TheliaEvents est une classe qui définit une liste d'événements prédéfinis dans le framework Thelia.<br>
+                <a
+                    href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Core/Event/TheliaEvents.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Core/Event/TheliaEvents.php</a><br><br>
+
+                La classe MailerFactory est importée depuis le package Mailer de Thelia. Elle est utilisée pour créer et
+                envoyer des e-mails.<br>
+                <a
+                    href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Mailer/MailerFactory.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Mailer/MailerFactory.php</a><br><br>
+
+                Les classes OrderQuery, OrderStatusQuery et ConfigQuery fournissent des méthodes pour interagir avec la
+                base de données de Thelia<br><br>
+
+                OrderQuery pour récupérer ou mettre à jour des informations sur les commandes, OrderStatusQuery pour les
+                statuts de commande et ConfigQuery pour les paramètres de configuration.<br><br>
+                <a
+                    href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/OrderQuery.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/OrderQuery.php</a>><br>
+                <a
+                    href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/OrderStatusQuery.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/OrderStatusQuery.php</a><br>
+                ConfigQuery va nous servir pour récupérer l'adresse e-mail et le nom du magasin afin de l'utiliser dans
+                l'e-mail envoyé aux clients.<br><br>
+                <a
+                    href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/ConfigQuery.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/ConfigQuery.php</a><br><br>
+
+                Ensuite, on va définir que notre classe va implementer EventSuscriberInterface.<br>
+
+                <pre><code>class MonListener implements EventSubscriberInterface { }</code></pre>
+                Puisqu'on implemente une interface, il faudra obligatoirement ecrire le corps des methodes présentes
+                dans
+                cette
+                interface.<br><br>
+
+                Comme on peut le voir sur
+                <a
+                    href=" https://github.com/symfony/symfony/blob/6.2/src/Symfony/Component/EventDispatcher/EventSubscriberInterface.php">https://github.com/symfony/symfony/blob/6.2/src/Symfony/Component/EventDispatcher/EventSubscriberInterface.php
+                </a>
+                la seule méthode obligatoire est getSubscribedEvents<br>
+                Nous verrons un peu plus loin comment l'écrire, et concentrons nous sur notre email.
+
+
+                Quand le besoin se fait sentir, on peut se servir de la méthode magique constructeur, ici par exemple on
+                appele
+                <pre>
+                    <code>
+                    protected $mailer;
+
+                    public function __construct(MailerFactory $mailer)
+                    {
+                        $this->mailer = $mailer;
+                    }
+                    </code>
+                </pre>
+
+                Explication compliquée ? :<br>
+                Le constructeur est appelé lorsqu'un nouvel objet de cette classe est instancié.<br><br>
+
+                Dans ce constructeur, une instance de MailerFactory est injectée et stockée dans la propriété $mailer de
+                l'objet.<br>
+                Cette instance est passée en argument lors de la création de l'objet.<br><br>
+
+                L'injection de dépendance (ou "Dependency Injection" en anglais) permet de fournir des dépendances à une
+                classe au lieu de les instancier à l'intérieur de la classe.<br>
+                Cela permet de rendre le code plus souple et plus facilement testable.
+                Dans ce cas, l'objet MonListener dépend de la classe MailerFactory, et cette dépendance est
+                fournie lors de la construction de l'objet.<br><br>
+
+                Explication simple ? :<br>
+                Cette partie de code définit une variable protégée (accessible uniquement depuis la classe et ses
+                classes enfants) nommée "mailer".<br>
+                Cette variable est initialisée dans le constructeur de la classe en lui attribuant l'objet
+                "MailerFactory" fourni en argument.<br><br>
+
+                En d'autres termes, cette classe a besoin de la classe "MailerFactory" pour fonctionner correctement,
+                et le constructeur lui permet de l'utiliser en la stockant dans une variable de classe pour y accéder
+                plus tard.<br>
+                <pre>
+                    <code>
+                    $order = $event→getOrder();
+                    $orderStatus = $order→getOrderStatus()→getId();
+                    $customer = $order→getCustomer();
+                    $package = $order→getDeliveryRef();
+                
+                    $message = MessageQuery::create()   
+                    ->filterByName('mon_test')
+                                ->findOne();
+                    </code>
+                </pre>
+
+                $order = $event->getOrder(); : Récupère l'objet de la commande concernée par l'événement.<br>
+                $orderStatus = $order->getOrderStatus()->getId(); : Récupère l'identifiant du statut de la commande (par
+                exemple "en attente de paiement", "en cours de traitement", "expédiée", etc.).<br>
+                $customer = $order->getCustomer(); : Récupère l'objet client associé à la commande.<br>
+                $package = $order->getDeliveryRef(); : Récupère la référence de livraison associée à la
+                commande.<br><br>
+
+                $message = MessageQuery::create()->filterByName('mon_test')->findOne(); :<br>
+                Recherche dans la base de données un objet Message qui correspond à 'mon_test'.<br>
+                Le résultat de cette recherche est stocké dans la variable $message.<br><br>
+
+                On peut très bien créer le mail soi-même dans le BO,<br>
+                ça marchera en l'état si on crée un template de mail nommé 'mon_test'<br>
+                On verra plus tard pour automatiser.<br><br>
+
+
+                On va définir ensuite notre condition.<br>
+                Puisqu’on a pu récuperer le numéro du status de commande ($orderStatus),<br>
+                on va tester si il est égal à ce qu’on veut, ici 7.<br><br>
+
+                La ligne [ConfigQuery::getStoreEmail() => ConfigQuery::getStoreName()]
+                définit l’email de l’expéditeur ainsi que son nom<br><br>
+
+                La ligne commençant par $customer définit les destinataires de l'e-mail en utilisant l'adresse e-mail du
+                client en tant qu'adresse de destination, et le prénom et le nom du client en tant que nom de
+                destinataire. Ainsi, le
+                client recevra l'e-mail à son adresse e-mail avec son nom complet en tant que destinataire.<br><br>
+
+
+                Ensuite nous avons un tableau de paramètres supplémentaires qui seront utilisés pour personnaliser le
+                contenu de l'email.<br><br>
+                Notamment l’id et la ref de la commande, ainsi que ‘package’, le numéro de suivi de l’envoi.<br><br>
+
+                En fait, on récuperes ici tout ce que l’on souhaite utiliser par la suite dans le mail.<br><br>
+
+                <pre>
+                    <code>
+                    if ($orderStatus === 7) {
+
+                        $email = $this→mailer→createEmailMessage(
+
+                            MonDossier::MON_EXEMPLE,
+                            MonDossier::’mon_test’,
+                            [ConfigQuery::getStoreEmail() => ConfigQuery::getStoreName()],
+                            [$customer->getEmail() => $customer->getFirstname() . " " . $customer->getLastname()],
+                            [
+                                'order_id' => $event->getOrder()->getId(),
+                                'order_ref' => $event->getOrder()->getRef(),
+                                'package' => $order->getDeliveryRef()
+                                
+                            ]
+                        );
+
+                        $this->mailer->send($email);
+
+                    }
+                    </code>
+                </pre>
+
+                La méthode getSubscribedEvents permet de s’abonner aux évenements que l’on veut.
+                Icin on s’abonne à l’event de thelia ORDER_UPDATE_STATUS
+
+                Lorsque ORDER_UPDATE_STATUS est declenché, la methode updateOrderStatus sera executée
+                <pre>
+                    <code>
+                    public static function getSubscribedEvents()
+                    {
+                        return array(
+                            TheliaEvents::LE_NOM_DE_L_EVENT => ['leNomDeLaFonction', la priorité],
+                            TheliaEvents::ORDER_UPDATE_STATUS           => ['updateOrderStatus', 128],
+                        );
+                    }
+                    </code>
+                </pre>
+            </div>
+
+            <h2>Automatiser la création du mail coté BO</h2>
+
+            <div class="col-12">
+                Si on veut automatiser la création de l’email coté back,<br>
+                il va déja falloir définir une constante dans notre classe principale situé donc à la racine du
+                projet.<br><br>
+
+                Exemple :
+                <pre><code>const PARTIAL_CONFIRMATION_MESSAGE_NAME = 'ma_constante';</code></pre>
+
+                Nous allons nous servir d'une des fonctions offertes par la class BaseModule, ça vous dit quelque chose
+                ?
+
+                Voila ce que nous en dit la doc thelia :<br><br>
+
+                <a
+                    href="https://doc.thelia.net/docs/extending_thelia/#base-file-myprojectphp">https://doc.thelia.net/docs/extending_thelia/#base-file-myprojectphp</a><br>
+
+                Pendant le cycle de vie d'un module, ces fonctions sont appelées et vous permettent d'appliquer
+                votre
+                propre logique en les écrasant :<br><br>
+
+                install(ConnectionInterface $con = null) ; Cette méthode est appelée lorsque le plugin est installé
+                pour
+                la première fois.<br>
+                preActivation(ConnectionInterface $con = null) ; Cette méthode est appelée avant l'activation du
+                module,
+                et peut annuler l'activation en retournant false.<br>
+                postActivation(ConnectionInterface $con = null) ; Cette méthode est appelée après que le module ait
+                été
+                activé avec succès.<br>
+                preDeactivation(ConnectionInterface $con = null) ; Cette méthode est appelée avant la désactivation
+                du
+                module, et peut annuler la désactivation en renvoyant false.<br>
+                postDeactivation(ConnectionInterface $con = null) ; Cette méthode est appelée après que le module
+                ait
+                été désactivé avec succès.<br>
+                update($currentVersion, $newVersion, ConnectionInterface $con = null) ; Cette méthode est appelée
+                lors
+                du rafraîchissement d'un module si la version précédente dans module.xml est différente de la
+                version
+                actuelle.<br><br>
+
+                En l'occurence, pour nous ce sera la méthode "postActivation", celle-ci est appelée automatiquement
+                lorsque le module est activé, elle permet
+                d'initialiser le module, et dans notre cas en créant un message pour la notification de confirmation
+                d'envoi
+                partiel de commande.<br>
+
+                <pre>
+                    <code>
+                        public function postActivation(ConnectionInterface $con = null): void
+                            {
+                                if (null === MessageQuery::create()->findOneByName(self::PARTIAL_CONFIRMATION_MESSAGE_NAME)) {
+                                    $message = new Message();
+
+                                    $message
+                                        ->setName(self::PARTIAL_CONFIRMATION_MESSAGE_NAME)
+                                        ->setHtmlLayoutFileName('mon_template.html')
+                                        ->setTextLayoutFileName('mon_template.txt')
+                                        ->setLocale('en_US')
+                                        ->setTitle('The title of your message')
+                                        ->setSubject('The subject of your message')
+
+                                        ->setLocale('fr_FR')
+                                        ->setTitle('Le titre de votre message')
+                                        ->setSubject('Le sujet de votre message')
+
+                                        ->save()
+                                    ;
+                                }
+                            }
+                    </code>
+                </pre>
+                <p>
+
+
+
+                    On va devoir rajouter les appels aux classes dont on a besoin :
+                </p>
+                <pre>
+                    <code>
+                    use Propel\Runtime\Connection\ConnectionInterface;
+                    use Thelia\Model\Message;
+                    use Thelia\Model\MessageQuery;
+                    </code>
+                </pre>
+
+                <p>
+                    La class ConnectionInterface est nécesseraire pour les methodes de types preactivation,
+                    postactivation,
+                    etc et on vient d'utiliser une méthode postActivation.<br>
+                    La classe message représente un message dans Thelia, c'est-à-dire un e-mail qui peut être envoyé à
+                    un
+                    client ou à un administrateur.<br>
+                    <a
+                        href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/Message.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/Message.php</a><br><br>
+
+                    MessageQuery permet de faire des requêtes sur les messages.<br>
+                    <a
+                        href="https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/MessageQuery.php">https://github.com/thelia/thelia/blob/main/core/lib/Thelia/Model/MessageQuery.php</a><br><br>
+
+                    Dans le listener, il faudra remplacer le nom du message par le nom de votre constante, ici ce serait
+                    'ma_constante', et rajouter l’appel à la
+                    classe MessageQuery avec :
+                    use Thelia\Model\MessageQuery;<br><br>
+
+                    Il faudra aussi créer les dossiers/fichiers suivants :<br>
+                    templates/email/default/lenomdemonfichier.html<br>
+                    templates/email/default/lenomdemonfichier.txt<br>
+                    I18N/email/default/fr_FR.php<br><br>
+
+
+
+                    Définitions :<br><br>
+
+                    classes : Une class est la définition d'un objet ou entité. C'est un peu comme une boite ou
+                    conteneur
+                    dans lequel on va pouvoir définir les propriétés et méthodes<br>
+                    propriétes ou attribut : Ce sont les caractéristiques de l'objet. Quelque part ce sont des variables
+                    de classes.<br>
+                    méthodes : ce sont les fonctionnalités, c'est à dire les actions que l'on pourra faire avec l'objet.
+                    En
+                    fait ce sont des fonctions mais appliquées à un objet.<br><br>
+
+                    constructeur: fonction qui definit comment on dois creer un objet de class<br><br>
+                </p>
+                <h2>Ressources</h2><br><br>
+
+                <h3>Ecrit</h3>
+                <p>
+                    Les bases de php par nouvelle techno<br>
+                    <a
+                        href="https://nouvelle-techno.fr/articles/live-coding-php-oriente-objet-concepts-de-base">https://nouvelle-techno.fr/articles/live-coding-php-oriente-objet-concepts-de-base</a><br><br>
+
+                    Thelia school<br>
+                    <a
+                        href="https://thelia-school.com/developpement.html"></a>https://thelia-school.com/developpement.html<br>
+
+                    Thelia doc > 2.5<br>
+                    <a ref="https://doc.thelia.net/docs">https://doc.thelia.net/docs</a><br><br>
+
+                    Thelia doc &lt; 2.5<br>
+                    <a href="http://thelia.github.io/">http://thelia.github.io/</a><br><br>>
+
+                    Page accueil de la doc symfony en français<br>
+                    <a
+                        href="https://symfony.com/doc/current/the-fast-track/fr/index.html">https://symfony.com/doc/current/the-fast-track/fr/index.html</a><br><br>
+
+
+                    Doc non officielle sur symfony<br>
+                    <a
+                        ref="https://sites.google.com/site/symfonikhal/home">https://sites.google.com/site/symfonikhal/home</a><br><br>>
+                </p>
+                <h3>Videos</h3>
+                <p>
+                    PHP - cours - playlist bases et POO - par Formationvideo<br>
+                    <a
+                        href="https://invidious.silur.me/playlist?list=PLrSOXFDHBtfFuZttC17M-jNpKnzUL5Adc">https://invidious.silur.me/playlist?list=PLrSOXFDHBtfFuZttC17M-jNpKnzUL5Adc</a><br>
+                    <a
+                        href="https://youtube.com/playlist?list=PLrSOXFDHBtfFuZttC17M-jNpKnzUL5Adc">https://youtube.com/playlist?list=PLrSOXFDHBtfFuZttC17M-jNpKnzUL5Adc</a>><br><br>
+
+                    Playlist nouvelle techno sur les bases de php<br>
+                    <a
+                        href="https://invidious.silur.me/playlist?list=PLBq3aRiVuwyzPl8lh6lrdBXBnSpjLKwZi">https://invidious.silur.me/playlist?list=PLBq3aRiVuwyzPl8lh6lrdBXBnSpjLKwZi</a>><br>
+                    <a
+                        href="https://youtube.com/playlist?list=PLBq3aRiVuwyzPl8lh6lrdBXBnSpjLKwZi">https://youtube.com/playlist?list=PLBq3aRiVuwyzPl8lh6lrdBXBnSpjLKwZi</a><br><br>
+
+                    Playlist nouvelle techno sur la POO<br>
+                    <a
+                        href="https://invidious.silur.me/playlist?list=PLBq3aRiVuwyx6B9sJip_ZU1lt7jjCwsMJ">https://invidious.silur.me/playlist?list=PLBq3aRiVuwyx6B9sJip_ZU1lt7jjCwsMJ</a>><br><br>
+
+                    Playlist nouvelle techno sur Symfony 6<br>
+                    <a
+                        href="https://invidious.silur.me/playlist?list=PLBq3aRiVuwyzI0MT4LhvwqkVenz5pF_DM">https://invidious.silur.me/playlist?list=PLBq3aRiVuwyzI0MT4LhvwqkVenz5pF_DM</a><br>
+                    <a
+                        href="https://youtube.com/playlist?list=PLBq3aRiVuwyzI0MT4LhvwqkVenz5pF_DM">https://youtube.com/playlist?list=PLBq3aRiVuwyzI0MT4LhvwqkVenz5pF_DM</a><br><br>
+
+                    Playlist Techwall<br>
+                    Symfony 6 Créer un projet de A jusqu'à Z en manipulant les controlleurs, les routeurs, Twig,
+                    Doctrine,
+                    les formulaires, les services et La sécurité<br>
+                    <a
+                        href="https://invidious.silur.me/playlist?list=PLl3CtU4THqPawV0hRF8Qqn0RVEHSjYgfy">https://invidious.silur.me/playlist?list=PLl3CtU4THqPawV0hRF8Qqn0RVEHSjYgfy</a><br>
+                    <a
+                        href="https://youtube.com/playlist?list=PLl3CtU4THqPawV0hRF8Qqn0RVEHSjYgfy">https://youtube.com/playlist?list=PLl3CtU4THqPawV0hRF8Qqn0RVEHSjYgfy</a><br><br>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
